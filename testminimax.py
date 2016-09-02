@@ -1,8 +1,7 @@
 """Example test to make sure
 your minimax works, using the
 #my_moves evaluation function."""
-from isolation import Board
-import isolation
+from isolation import Board, game_as_text
 from player_submission import CustomPlayer
 
 if __name__ == "__main__":
@@ -17,10 +16,14 @@ if __name__ == "__main__":
     ]
     b.__last_player_move__[p1] = (1,2)
     b.__last_player_move__[p2] = (0,1)
+    b.move_count = 2
+
+    output_b = b.copy()
     # use minimax to determine optimal move
     # sequence for player 1
     winner, move_history, termination = b.play_isolation()
-    isolation.game_as_text(winner, move_history, termination)
+
+    print game_as_text(winner, move_history, termination, output_b)
     # your output should look like this:
     """
     ####################
