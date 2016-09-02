@@ -12,7 +12,7 @@ class OpenMoveEvalFn():
     for the active player."""
     def score(self, game):
         # TODO: finish this function!
-        return eval_func
+        return len(game.get_legal_moves())
 
 # Submission Class 2
 class CustomEvalFn():
@@ -59,7 +59,42 @@ class CustomPlayer():
 
     def minimax(self, game, depth=float("inf"), maximizing_player=True):
         # TODO: finish this function!
+        if self.terminal_test(game, depth):
+            return None, self.utility(game)
+        current_level = game.move_count
+        search_depth = current_level + depth
+        actions = game.get_legal_moves()
+        results = []
+        for action in actions:
+            if maximizing_player:
+                results.append(self.min_value(game.forecast_move(action), search_depth))
+            else:
+                results.append(self.max_value(game.forecast_move(action), search_depth))
+        best_val = max(results) if maximizing_player else min(results)
+        best_index = results.index(best_val)
+        best_move = actions[best_index]
         return best_move, best_val
+
+    def min_value(self, game, depth):
+        if self.terminal_test(game, depth):
+            return self.utility(game)
+        actions = game.get_legal_moves()
+        results = []
+        for action in actions:
+            results.append(self.max_value(game.forecast_move(action), depth))
+        return min(results)
+
+    def max_value(self, game, depth):
+        if self.terminal_test(game, depth):
+            return self.utility(game)
+        actions = game.get_legal_moves()
+        results = []
+        for action in actions:
+            results.append(self.min_value(game.forecast_move(action), depth))
+        return max(results)
+
+    def terminal_test(self, game, depth):
+        return game.is_winner(self) or game.is_opponent_winner(self) or game.move_count == depth
 
     def alphabeta(self, game, depth=float("inf"), alpha=float("-inf"), beta=float("inf"), maximizing_player=True):
         # TODO: finish this function!
