@@ -12,7 +12,10 @@ class OpenMoveEvalFn():
     for your computer player on the board."""
     def score(self, game, maximizing_player_turn=True):
         # TODO: finish this function!
-        return len(game.get_legal_moves())
+        if maximizing_player_turn:
+            return len(game.get_legal_moves())
+        else:
+            return len(game.get_opponent_moves())
 
 # Submission Class 2
 class CustomEvalFn():
@@ -49,14 +52,19 @@ class CustomPlayer():
 
     def utility(self, game, maximizing_player=True):
         """TODO: Update this function to calculate the utility of a game state"""
+        if maximizing_player:
+            if game.is_winner(self):
+                return float("inf")
 
-        if game.is_winner(self):
-            return float("inf")
+            if game.is_opponent_winner(self):
+                return float("-inf")
+        else:
+            if game.is_winner(self):
+                return float("-inf")
+            if game.is_opponent_winner(self):
+                return float("inf")
 
-        if game.is_opponent_winner(self):
-            return float("-inf")
-
-        return self.eval_fn.score(game)
+        return self.eval_fn.score(game, maximizing_player)
 
     def minimax(self, game, depth=float("inf"), maximizing_player=True):
         # TODO: finish this function!
@@ -68,30 +76,30 @@ class CustomPlayer():
         results = []
         for action in actions:
             if maximizing_player:
-                results.append(self.min_value(game.forecast_move(action), search_depth))
+                results.append(self.min_value(game.forecast_move(action), search_depth, not maximizing_player))
             else:
-                results.append(self.max_value(game.forecast_move(action), search_depth))
+                results.append(self.max_value(game.forecast_move(action), search_depth, not maximizing_player))
         best_val = max(results) if maximizing_player else min(results)
         best_index = results.index(best_val)
         best_move = actions[best_index]
         return best_move, best_val
 
-    def min_value(self, game, depth):
+    def min_value(self, game, depth, maximizing_player):
         if self.terminal_test(game, depth):
-            return self.utility(game)
+            return self.utility(game, maximizing_player)
         actions = game.get_legal_moves()
         results = []
         for action in actions:
-            results.append(self.max_value(game.forecast_move(action), depth))
+            results.append(self.max_value(game.forecast_move(action), depth, not maximizing_player))
         return min(results)
 
-    def max_value(self, game, depth):
+    def max_value(self, game, depth, maximizing_player):
         if self.terminal_test(game, depth):
-            return self.utility(game)
+            return self.utility(game, maximizing_player)
         actions = game.get_legal_moves()
         results = []
         for action in actions:
-            results.append(self.min_value(game.forecast_move(action), depth))
+            results.append(self.min_value(game.forecast_move(action), depth, not maximizing_player))
         return max(results)
 
     def terminal_test(self, game, depth):
