@@ -161,14 +161,17 @@ class Board:
                 return  self.__inactive_player__, move_history, "timeout"
 
             if curr_move not in legal_player_moves:
-                return self.__inactive_player__, move_history, "illegal move"
+                return self.__inactive_player__, move_history, "illegal move at (%d,%d)" % curr_move
 
             self.__apply_move__(curr_move)
 
 
 def game_as_text(winner, move_history, termination="", board=Board(1,2)):
     ans = StringIO.StringIO()
-
+    # Added to print intial board state
+    ans.write("%d." % -1 + " Initial board state\n")
+    ans.write(board.print_board())
+    
     for i, move in enumerate(move_history):
         p1_move = move[0]
         ans.write("%d." % i + " (%d,%d)\n" % p1_move)
@@ -184,8 +187,11 @@ def game_as_text(winner, move_history, termination="", board=Board(1,2)):
             ans.write(board.print_board())
 
     ans.write(termination + "\n")
-
-    ans.write("Winner: " + str(winner) + "\n")
+    
+    # Adding winner_text
+    winner_text = "Player 1" if winner == board.__player_1__ else "Player 2"
+    #ans.write("Winner: " + str(winner) + "\n")
+    ans.write("Winner: " + str(winner_text) + "\n")
 
     return ans.getvalue()
 
