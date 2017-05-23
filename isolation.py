@@ -140,7 +140,7 @@ class Board:
 
             move_start = curr_time_millis()
 
-            time_left = lambda : time_limit - (curr_time_millis() - move_start)
+            time_left = lambda : time_limit - (curr_time_millis() - move_start) if time_limit else 2**64
 
             curr_move = Board.NOT_MOVED
             try:
@@ -157,7 +157,7 @@ class Board:
             else:
                 move_history[-1].append(curr_move)
 
-            if time_limit and time_left() <= 0:
+            if time_limit and time_left() <= 0 and not isinstance(self.__active_player__, HumanPlayer):
                 return  self.__inactive_player__, move_history, "timeout"
 
             if curr_move not in legal_player_moves:
@@ -199,10 +199,10 @@ if __name__ == '__main__':
 
     print("Starting game:")
 
-    from test_players import RandomPlayer
+    from player_submission import CustomPlayer
     from test_players import HumanPlayer
 
-    board = Board(RandomPlayer(), HumanPlayer())
+    board = Board(CustomPlayer(), HumanPlayer())
     winner, move_history, termination = board.play_isolation()
 
     print game_as_text(winner, move_history, termination)
